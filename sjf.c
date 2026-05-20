@@ -1,40 +1,46 @@
 #include<stdio.h>
-#include<stdlib.h>
-struct sjf{
-    int pid,bt,wt,tat;
-}p[10]; 
+struct process{
+    int pid,bt,ct ,tat,wt;
+}p[50],temp;
 int main(){
-    int twt=0,tott=0;
-    struct sjf temp;
-    int n,i;
-    printf("enter the number process:");
+    int n,i,j;
+    printf("enter the number of process");
     scanf("%d",&n);
+    printf("enter the burst time:");
     for(i=0;i<n;i++){
-        p[i].pid=i;
-        printf("enter the burst time:");
+         p[i].pid=i;   
         scanf("%d",&p[i].bt);
     }
     for(i=0;i<n-1;i++){
-        for(int j=i+1;j<n;j++){
-                temp=p[i];
-                p[i]=p[j];
-                p[j]=temp;
-
+        for(j=0;j<n-i-1;j++){
+            if(p[j].bt>p[j+1].bt){
+                temp=p[j];    
+                p[j]=p[j+1];
+                p[j+1]=temp;
+            }   
         }
     }
+    p[0].ct=p[0].bt;
+    p[0].tat=p[0].ct;
     p[0].wt=0;
-    p[0].tat=p[0].bt;
     for(i=1;i<n;i++){
-        p[i].wt=p[i-1].wt+p[i].bt;
-        p[i].tat=p[i].wt+p[i].bt;
+        p[i].ct=p[i-1].ct+p[i].bt;
+        p[i].tat=p[i].ct;
+        p[i].wt=p[i].tat-p[i].bt;
     }
     for(i=0;i<n;i++){
-        twt+=p[i].wt;
-        tott+=p[i].tat;
+        printf("p->%d",p[i].pid);
     }
-    printf("total wt: %d \n" ,twt);
-    printf("average wt: %d\n" ,twt/n);
-    printf("total tat: %d\n",tott);
-    printf("average tat %d\n",tott/n);
-    return 0;
-}
+        printf("\n\nPID\tBT\tTAT\tWT\n");
+    for(i=0; i<n; i++){
+        printf("%d\t%d\t%d\t%d\n",
+               p[i].pid, p[i].bt,
+               p[i].tat, p[i].wt);
+    }
+    float avg_tat=0 ,avg_wt=0;
+    for(i=0;i<n;i++){
+        avg_tat+=p[i].tat;
+        avg_wt+=p[i].wt;
+    }
+    printf("avg tat= %f",avg_tat/n);
+    printf("avg wt=%f",avg_wt);
